@@ -37,7 +37,7 @@ class _HomepageState extends State<Homepage> {
     } else {
       // Show an error message
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           backgroundColor: Colors.redAccent,
           content: Text(
             'Opening meter must be less than closing meter',
@@ -55,11 +55,11 @@ class _HomepageState extends State<Homepage> {
         TextEditingController _newPriceController = TextEditingController();
 
         return AlertDialog(
-          title: Text('Update Petrol Price'),
+          title: const Text('Update Petrol Price'),
           content: TextField(
             controller: _newPriceController,
             keyboardType: TextInputType.number,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               hintText: 'Enter new petrol price',
             ),
           ),
@@ -68,7 +68,7 @@ class _HomepageState extends State<Homepage> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
@@ -84,7 +84,7 @@ class _HomepageState extends State<Homepage> {
                 // Close the dialog
                 Navigator.pop(context);
               },
-              child: Text('Update'),
+              child: const Text('Update'),
             ),
           ],
         );
@@ -106,7 +106,7 @@ class _HomepageState extends State<Homepage> {
                   "assets/img/oil.png",
                   height: 30,
                 ),
-                Text(
+                const Text(
                   'Petroli',
                   style: TextStyle(
                       fontFamily: 'Oswald',
@@ -119,200 +119,211 @@ class _HomepageState extends State<Homepage> {
           ),
         ),
       ),
-      body: Column(
-        children: [
-          SizedBox(
-            height: 5,
-          ),
-          Container(
-            height: 50,
-            width: 320,
-            color: Colors.red,
-          ),
-          SizedBox(height: 15),
-          Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.water_drop,
-                    color: Color.fromRGBO(253, 147, 70, 1),
-                  ),
-                  Text(
-                    'Petrol : ${petrolUsed.toStringAsFixed(2)} ltr',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 5,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    "assets/img/dollar.png",
-                    height: 25,
-                    width: 25,
-                  ),
-                  SizedBox(
-                    width: 3,
-                  ),
-                  Text(
-                    'Cash : ₹${cashAvailable.toStringAsFixed(2)}',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Container(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(
-                        'Price :',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(width: 10),
-                      GestureDetector(
-                        onTap: _updatePetrolPrice,
-                        child: Text(
-                          '₹${price.toStringAsFixed(2)}',
-                          style: TextStyle(
-                            decoration: TextDecoration.underline,
-                            color: Colors.blue,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 5,
+            ),
+            Container(
+              height: 50,
+              width: 320,
+              color: Colors.red,
+            ),
+            const SizedBox(height: 15),
+            Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.water_drop,
+                      color: Color.fromRGBO(253, 147, 70, 1),
+                    ),
+                    Text(
+                      'Petrol : ${petrolUsed.toStringAsFixed(2)} ltr',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 22),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 5,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      "assets/img/dollar.png",
+                      height: 25,
+                      width: 25,
+                    ),
+                    const SizedBox(
+                      width: 3,
+                    ),
+                    Text(
+                      'Cash : ₹${cashAvailable.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 22),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Container(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        const Text(
+                          'Price :',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(width: 10),
+                        GestureDetector(
+                          onTap: _updatePetrolPrice,
+                          child: Text(
+                            '₹${price.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              decoration: TextDecoration.underline,
+                              color: Colors.blue,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    'Opening :',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  TextField(
-                    controller: _opening,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      hintText: 'Enter Opening Meter',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
+                      ],
+                    ),
+                    const Text(
+                      'Opening :',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    TextField(
+                      controller: _opening,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        hintText: 'Enter Opening Meter',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Text(
-                    'Closing :',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  TextField(
-                    controller: _closing,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      hintText: 'Enter Closing Meter',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    const Text(
+                      'Closing :',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    TextField(
+                      controller: _closing,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        hintText: 'Enter Closing Meter',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Text(
-                    'Pinelab :',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  TextField(
-                    controller: _pinlab,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      hintText: 'Enter Pinelab Value',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    const Text(
+                      'Pinelab :',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    TextField(
+                      controller: _pinlab,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        hintText: 'Enter Pinelab Value',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Text(
-                    'Online Payment :',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  TextField(
-                    controller: _onlinePayment,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      hintText: 'Enter Online Payment',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    const Text(
+                      'Online Payment :',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    TextField(
+                      controller: _onlinePayment,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        hintText: 'Enter Online Payment',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                onPressed: _calculatePetrolAndCash,
-                child: Text('Enter'),
-              ),
-              SizedBox(
-                width: 30,
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  _opening.clear();
-                  _closing.clear();
-                  _pinlab.clear();
-                  _onlinePayment.clear();
-                  petrolUsed = 0.0;
-                  cashAvailable = 0.0;
-                  setState(() {});
-                },
-                child: Text('Clear All'),
-              ),
-            ],
-          ),
-          SizedBox(height: 25),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "Made By : Bir Mehto",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold, color: Colors.black38),
-              ),
-            ],
-          ),
-        ],
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: _calculatePetrolAndCash,
+                  child: const Text('Enter'),
+                ),
+                const SizedBox(
+                  width: 30,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    _opening.clear();
+                    _closing.clear();
+                    _pinlab.clear();
+                    _onlinePayment.clear();
+                    petrolUsed = 0.0;
+                    cashAvailable = 0.0;
+                    setState(() {});
+                  },
+                  child: const Text('Clear All'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 25),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  "Made By : Bir Mehto",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.black38),
+                ),
+                const SizedBox(
+                  width: 5,
+                ),
+                Image.asset(
+                  "assets/img/india.png",
+                  height: 20,
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

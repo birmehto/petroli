@@ -12,13 +12,10 @@ class _HomepageState extends State<Homepage> {
   final TextEditingController _closing = TextEditingController();
   final TextEditingController _pinlab = TextEditingController();
   final TextEditingController _onlinePayment = TextEditingController();
-  double opvalue = 0;
-  double Clovalue = 0;
-  double pinevalue = 0;
-  double price = 96.45;
 
   double petrolUsed = 0.0;
   double cashAvailable = 0.0;
+  double price = 96.45; // Initial petrol price
 
   void _calculatePetrolAndCash() {
     // Parse values from text controllers
@@ -35,44 +32,79 @@ class _HomepageState extends State<Homepage> {
       // Calculate cash available
       cashAvailable = (petrolUsed * price) - pinlabValue - onlinePaymentValue;
 
-      // Update UI if needed
+      // Update UI
       setState(() {});
     } else {
-      // Show an error message or handle the case where opening meter is not less than closing meter
-      // You can display a snackbar or set an error message
+      // Show an error message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Opening meter must be less than closing meter'),
+          backgroundColor: Colors.redAccent,
+          content: Text(
+            'Opening meter must be less than closing meter',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
         ),
       );
     }
   }
 
+  void _updatePetrolPrice() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        TextEditingController _newPriceController = TextEditingController();
+
+        return AlertDialog(
+          title: Text('Update Petrol Price'),
+          content: TextField(
+            controller: _newPriceController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              hintText: 'Enter new petrol price',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Update petrol price from the dialog
+                price = double.tryParse(_newPriceController.text) ?? price;
+
+                // Clear the new petrol price text field
+                _newPriceController.clear();
+
+                // Update UI
+                setState(() {});
+
+                // Close the dialog
+                Navigator.pop(context);
+              },
+              child: Text('Update'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        drawer: Drawer(
-          child: Column(
-            children: [
-              Container(
-                height: 50,
-                width: 320,
-                color: Colors.amber,
-              ),
-            ],
-          ),
-        ),
-        appBar: AppBar(
-          flexibleSpace: const Center(
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        flexibleSpace: Center(
+          child: SafeArea(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.water_drop,
-                  color: Color.fromRGBO(253, 147, 70, 1),
-                  size: 25,
+                Image.asset(
+                  "assets/img/oil.png",
+                  height: 30,
                 ),
                 Text(
                   'Petroli',
@@ -86,7 +118,9 @@ class _HomepageState extends State<Homepage> {
             ),
           ),
         ),
-        body: Column(
+      ),
+      body: SingleChildScrollView(
+        child: Column(
           children: [
             SizedBox(
               height: 5,
@@ -96,10 +130,48 @@ class _HomepageState extends State<Homepage> {
               width: 320,
               color: Colors.red,
             ),
-            Text('Petrol Used: ${petrolUsed.toStringAsFixed(2)} liters'),
-            Text('Cash Available: ₹${cashAvailable.toStringAsFixed(2)}'),
-            Placeholder(
-              fallbackHeight: 50,
+            SizedBox(height: 15),
+            Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.water_drop,
+                      color: Color.fromRGBO(253, 147, 70, 1),
+                    ),
+                    Text(
+                      'Petrol : ${petrolUsed.toStringAsFixed(2)} ltr',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      "assets/img/dollar.png",
+                      height: 25,
+                      width: 25,
+                    ),
+                    SizedBox(
+                      width: 3,
+                    ),
+                    Text(
+                      'Cash : ₹${cashAvailable.toStringAsFixed(2)}',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 10,
             ),
             Container(
               child: Padding(
@@ -107,6 +179,26 @@ class _HomepageState extends State<Homepage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          'Price :',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(width: 10),
+                        GestureDetector(
+                          onTap: _updatePetrolPrice,
+                          child: Text(
+                            '₹${price.toStringAsFixed(2)}',
+                            style: TextStyle(
+                              decoration: TextDecoration.underline,
+                              color: Colors.blue,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                     Text(
                       'Opening :',
                       style: TextStyle(fontWeight: FontWeight.bold),
@@ -116,6 +208,7 @@ class _HomepageState extends State<Homepage> {
                     ),
                     TextField(
                       controller: _opening,
+                      keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         hintText: 'Enter Opening Meter',
                         border: OutlineInputBorder(
@@ -135,6 +228,7 @@ class _HomepageState extends State<Homepage> {
                     ),
                     TextField(
                       controller: _closing,
+                      keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         hintText: 'Enter Closing Meter',
                         border: OutlineInputBorder(
@@ -154,6 +248,7 @@ class _HomepageState extends State<Homepage> {
                     ),
                     TextField(
                       controller: _pinlab,
+                      keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         hintText: 'Enter Pinelab Value',
                         border: OutlineInputBorder(
@@ -173,6 +268,7 @@ class _HomepageState extends State<Homepage> {
                     ),
                     TextField(
                       controller: _onlinePayment,
+                      keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         hintText: 'Enter Online Payment',
                         border: OutlineInputBorder(
@@ -188,9 +284,7 @@ class _HomepageState extends State<Homepage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
-                  onPressed: () {
-                    _calculatePetrolAndCash();
-                  },
+                  onPressed: _calculatePetrolAndCash,
                   child: Text('Enter'),
                 ),
                 SizedBox(
@@ -198,25 +292,36 @@ class _HomepageState extends State<Homepage> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    // Clear all fields
                     _opening.clear();
                     _closing.clear();
                     _pinlab.clear();
                     _onlinePayment.clear();
-
-                    // Clear calculated values
                     petrolUsed = 0.0;
                     cashAvailable = 0.0;
-
-                    // Update UI
                     setState(() {});
                   },
                   child: Text('Clear All'),
                 ),
               ],
             ),
-            // Display calculated values
-            SizedBox(height: 20),
+            SizedBox(height: 25),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Made By : Bir Mehto",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.black38),
+                ),
+                SizedBox(
+                  width: 5,
+                ),
+                Image.asset(
+                  "assets/img/india.png",
+                  height: 20,
+                ),
+              ],
+            ),
           ],
         ),
       ),

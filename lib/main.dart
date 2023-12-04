@@ -13,11 +13,9 @@ class Petroli extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Homepage(),
+      home: const Homepage(),
       theme: ThemeData(
-        // primaryColor: Color.fromRGBO(253, 147, 70, 1),
         primarySwatch: Colors.purple,
-
         useMaterial3: false,
       ),
     );
