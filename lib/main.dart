@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:patroli/demo.dart';
+import 'package:patroli/home.dart';
 
 void main() {
   runApp(const Petroli());

@@ -96,9 +96,8 @@ class _HomepageState extends State<Homepage> {
               width: 320,
               color: Colors.red,
             ),
-            Placeholder(
-              fallbackHeight: 120,
-            ),
+            Text('Petrol Used: ${petrolUsed.toStringAsFixed(2)} liters'),
+            Text('Cash Available: ₹${cashAvailable.toStringAsFixed(2)}'),
             Placeholder(
               fallbackHeight: 50,
             ),
@@ -218,8 +217,6 @@ class _HomepageState extends State<Homepage> {
             ),
             // Display calculated values
             SizedBox(height: 20),
-            Text('Petrol Used: ${petrolUsed.toStringAsFixed(2)} liters'),
-            Text('Cash Available: ₹${cashAvailable.toStringAsFixed(2)}'),
           ],
         ),
       ),
