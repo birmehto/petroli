@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-// import 'package:google_fonts/google_fonts.dart';
+
+import 'package:patroli/demo.dart';
 
 void main() {
   runApp(const Petroli());
@@ -11,23 +12,13 @@ class Petroli extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.green,
-          title: const Center(
-            child: Text(
-              'Petroli',
-              style: TextStyle(color: Colors.greenAccent, fontFamily: 'Oswald'),
-            ),
-          ),
-        ),
-        body: const Column(children: [
-          TextField(
-            decoration: InputDecoration(
-              hintText: 'plese enter a value',
-            ),
-          )
-        ]),
+      debugShowCheckedModeBanner: false,
+      home: Homepage(),
+      theme: ThemeData(
+        // primaryColor: Color.fromRGBO(253, 147, 70, 1),
+        primarySwatch: Colors.purple,
+
+        useMaterial3: false,
       ),
     );
   }
