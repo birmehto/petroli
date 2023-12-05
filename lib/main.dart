@@ -12,10 +12,11 @@ class Petroli extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Petrolin',
       debugShowCheckedModeBanner: false,
       home: const Homepage(),
       theme: ThemeData(
-        primarySwatch: Colors.purple,
+        primarySwatch: Colors.teal,
         useMaterial3: false,
       ),
     );

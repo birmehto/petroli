@@ -12,6 +12,7 @@ class _HomepageState extends State<Homepage> {
   final TextEditingController _closing = TextEditingController();
   final TextEditingController _pinlab = TextEditingController();
   final TextEditingController _onlinePayment = TextEditingController();
+  final TextEditingController _depositCash = TextEditingController();
 
   double petrolUsed = 0.0;
   double cashAvailable = 0.0;
@@ -23,6 +24,25 @@ class _HomepageState extends State<Homepage> {
     double closingMeter = double.tryParse(_closing.text) ?? 0;
     double pinlabValue = double.tryParse(_pinlab.text) ?? 0;
     double onlinePaymentValue = double.tryParse(_onlinePayment.text) ?? 0;
+    double depositCashValue = double.tryParse(_depositCash.text) ?? 0;
+
+    // Check for suspicious data
+    if (openingMeter < 0 ||
+        closingMeter < 0 ||
+        pinlabValue < 0 ||
+        onlinePaymentValue < 0 ||
+        depositCashValue < 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.redAccent,
+          content: Text(
+            'Please enter valid positive values',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+      );
+      return;
+    }
 
     // Check if opening meter is less than closing meter
     if (openingMeter < closingMeter) {
@@ -30,14 +50,30 @@ class _HomepageState extends State<Homepage> {
       petrolUsed = closingMeter - openingMeter;
 
       // Calculate cash available
-      cashAvailable = (petrolUsed * price) - pinlabValue - onlinePaymentValue;
+      cashAvailable = (petrolUsed * price) -
+          pinlabValue -
+          onlinePaymentValue -
+          depositCashValue;
+
+      // Check for negative cash value
+      if (cashAvailable < 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: Colors.redAccent,
+            content: Text(
+              'Calculated cash cannot be negative',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        );
+        return;
+      }
 
       // Update UI
       setState(() {});
     } else {
-      // Show an error message
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           backgroundColor: Colors.redAccent,
           content: Text(
             'Opening meter must be less than closing meter',
@@ -55,11 +91,16 @@ class _HomepageState extends State<Homepage> {
         TextEditingController _newPriceController = TextEditingController();
 
         return AlertDialog(
-          title: Text('Update Petrol Price'),
+          title: Center(
+            child: const Text(
+              'Update Petrol Price',
+              style: TextStyle(color: Colors.green),
+            ),
+          ),
           content: TextField(
             controller: _newPriceController,
             keyboardType: TextInputType.number,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               hintText: 'Enter new petrol price',
             ),
           ),
@@ -68,7 +109,7 @@ class _HomepageState extends State<Homepage> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
@@ -84,7 +125,7 @@ class _HomepageState extends State<Homepage> {
                 // Close the dialog
                 Navigator.pop(context);
               },
-              child: Text('Update'),
+              child: const Text('Update'),
             ),
           ],
         );
@@ -106,13 +147,14 @@ class _HomepageState extends State<Homepage> {
                   "assets/img/oil.png",
                   height: 30,
                 ),
-                Text(
+                const Text(
                   'Petroli',
                   style: TextStyle(
-                      fontFamily: 'Oswald',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 25,
-                      color: Colors.white),
+                    fontFamily: 'Oswald',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 25,
+                    color: Colors.white,
+                  ),
                 ),
               ],
             ),
@@ -122,7 +164,7 @@ class _HomepageState extends State<Homepage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(
+            const SizedBox(
               height: 5,
             ),
             Container(
@@ -130,24 +172,26 @@ class _HomepageState extends State<Homepage> {
               width: 320,
               color: Colors.red,
             ),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
             Column(
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.water_drop,
                       color: Color.fromRGBO(253, 147, 70, 1),
                     ),
                     Text(
                       'Petrol : ${petrolUsed.toStringAsFixed(2)} ltr',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 22,
+                      ),
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 5,
                 ),
                 Row(
@@ -158,19 +202,19 @@ class _HomepageState extends State<Homepage> {
                       height: 25,
                       width: 25,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 3,
                     ),
-                    Text(
-                      'Cash : ₹${cashAvailable.toStringAsFixed(2)}',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-                    ),
+                    Text('Cash : ₹${cashAvailable.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                        )),
                   ],
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Container(
@@ -182,16 +226,16 @@ class _HomepageState extends State<Homepage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Text(
+                        const Text(
                           'Price :',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         GestureDetector(
                           onTap: _updatePetrolPrice,
                           child: Text(
                             '₹${price.toStringAsFixed(2)}',
-                            style: TextStyle(
+                            style: const TextStyle(
                               decoration: TextDecoration.underline,
                               color: Colors.blue,
                             ),
@@ -199,11 +243,11 @@ class _HomepageState extends State<Homepage> {
                         ),
                       ],
                     ),
-                    Text(
+                    const Text(
                       'Opening :',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 5,
                     ),
                     TextField(
@@ -216,14 +260,14 @@ class _HomepageState extends State<Homepage> {
                         ),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 5,
                     ),
-                    Text(
+                    const Text(
                       'Closing :',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 5,
                     ),
                     TextField(
@@ -236,14 +280,14 @@ class _HomepageState extends State<Homepage> {
                         ),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 5,
                     ),
-                    Text(
+                    const Text(
                       'Pinelab :',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 5,
                     ),
                     TextField(
@@ -256,14 +300,14 @@ class _HomepageState extends State<Homepage> {
                         ),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 5,
                     ),
-                    Text(
+                    const Text(
                       'Online Payment :',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 5,
                     ),
                     TextField(
@@ -271,6 +315,26 @@ class _HomepageState extends State<Homepage> {
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         hintText: 'Enter Online Payment',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    const Text(
+                      'Deposit Cash :',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    TextField(
+                      controller: _depositCash,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        hintText: 'Enter Deposit Cash',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
@@ -285,9 +349,9 @@ class _HomepageState extends State<Homepage> {
               children: [
                 ElevatedButton(
                   onPressed: _calculatePetrolAndCash,
-                  child: Text('Enter'),
+                  child: const Text('Enter'),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 30,
                 ),
                 ElevatedButton(
@@ -296,24 +360,27 @@ class _HomepageState extends State<Homepage> {
                     _closing.clear();
                     _pinlab.clear();
                     _onlinePayment.clear();
+                    _depositCash.clear();
                     petrolUsed = 0.0;
                     cashAvailable = 0.0;
                     setState(() {});
                   },
-                  child: Text('Clear All'),
+                  child: const Text('Clear All'),
                 ),
               ],
             ),
-            SizedBox(height: 25),
+            const SizedBox(height: 25),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
+                const Text(
                   "Made By : Bir Mehto",
                   style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.black38),
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black38,
+                  ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 5,
                 ),
                 Image.asset(

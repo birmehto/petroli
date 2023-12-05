@@ -12,6 +12,7 @@ class _HomepageState extends State<Homepage> {
   final TextEditingController _closing = TextEditingController();
   final TextEditingController _pinlab = TextEditingController();
   final TextEditingController _onlinePayment = TextEditingController();
+  final TextEditingController _depositCash = TextEditingController();
 
   double petrolUsed = 0.0;
   double cashAvailable = 0.0;
@@ -23,6 +24,25 @@ class _HomepageState extends State<Homepage> {
     double closingMeter = double.tryParse(_closing.text) ?? 0;
     double pinlabValue = double.tryParse(_pinlab.text) ?? 0;
     double onlinePaymentValue = double.tryParse(_onlinePayment.text) ?? 0;
+    double depositCashValue = double.tryParse(_depositCash.text) ?? 0;
+
+    // Check for suspicious data
+    if (openingMeter < 0 ||
+        closingMeter < 0 ||
+        pinlabValue < 0 ||
+        onlinePaymentValue < 0 ||
+        depositCashValue < 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.redAccent,
+          content: Text(
+            'Please enter valid positive values',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+      );
+      return;
+    }
 
     // Check if opening meter is less than closing meter
     if (openingMeter < closingMeter) {
@@ -30,12 +50,28 @@ class _HomepageState extends State<Homepage> {
       petrolUsed = closingMeter - openingMeter;
 
       // Calculate cash available
-      cashAvailable = (petrolUsed * price) - pinlabValue - onlinePaymentValue;
+      cashAvailable = (petrolUsed * price) -
+          pinlabValue -
+          onlinePaymentValue -
+          depositCashValue;
+
+      // Check for negative cash value
+      if (cashAvailable < 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: Colors.redAccent,
+            content: Text(
+              'Calculated cash cannot be negative',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        );
+        return;
+      }
 
       // Update UI
       setState(() {});
     } else {
-      // Show an error message
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           backgroundColor: Colors.redAccent,
@@ -55,7 +91,12 @@ class _HomepageState extends State<Homepage> {
         TextEditingController _newPriceController = TextEditingController();
 
         return AlertDialog(
-          title: const Text('Update Petrol Price'),
+          title: Center(
+            child: const Text(
+              'Update Petrol Price',
+              style: TextStyle(color: Colors.green),
+            ),
+          ),
           content: TextField(
             controller: _newPriceController,
             keyboardType: TextInputType.number,
@@ -107,12 +148,13 @@ class _HomepageState extends State<Homepage> {
                   height: 30,
                 ),
                 const Text(
-                  'Petroli',
+                  'Petrolin',
                   style: TextStyle(
-                      fontFamily: 'Oswald',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 25,
-                      color: Colors.white),
+                    fontFamily: 'Oswald',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 25,
+                    color: Colors.white,
+                  ),
                 ),
               ],
             ),
@@ -143,7 +185,9 @@ class _HomepageState extends State<Homepage> {
                     Text(
                       'Petrol : ${petrolUsed.toStringAsFixed(2)} ltr',
                       style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 22),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 22,
+                      ),
                     ),
                   ],
                 ),
@@ -161,11 +205,11 @@ class _HomepageState extends State<Homepage> {
                     const SizedBox(
                       width: 3,
                     ),
-                    Text(
-                      'Cash : ₹${cashAvailable.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 22),
-                    ),
+                    Text('Cash : ₹${cashAvailable.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                        )),
                   ],
                 ),
               ],
@@ -200,7 +244,7 @@ class _HomepageState extends State<Homepage> {
                       ],
                     ),
                     const Text(
-                      'Opening :',
+                      'Opening Meter:',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(
@@ -220,7 +264,7 @@ class _HomepageState extends State<Homepage> {
                       height: 5,
                     ),
                     const Text(
-                      'Closing :',
+                      'Closing Meter:',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(
@@ -240,7 +284,7 @@ class _HomepageState extends State<Homepage> {
                       height: 5,
                     ),
                     const Text(
-                      'Pinelab :',
+                      'Pinelab Value:',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(
@@ -276,6 +320,26 @@ class _HomepageState extends State<Homepage> {
                         ),
                       ),
                     ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    const Text(
+                      'Deposit Cash :',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    TextField(
+                      controller: _depositCash,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        hintText: 'Enter Deposit Cash',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -296,6 +360,7 @@ class _HomepageState extends State<Homepage> {
                     _closing.clear();
                     _pinlab.clear();
                     _onlinePayment.clear();
+                    _depositCash.clear();
                     petrolUsed = 0.0;
                     cashAvailable = 0.0;
                     setState(() {});
@@ -311,7 +376,9 @@ class _HomepageState extends State<Homepage> {
                 const Text(
                   "Made By : Bir Mehto",
                   style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.black38),
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black38,
+                  ),
                 ),
                 const SizedBox(
                   width: 5,
