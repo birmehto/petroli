@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:patroli/ads_manger.dart';
 
 class Homepage extends StatefulWidget {
-  const Homepage({Key? key}) : super(key: key);
+  const Homepage({super.key});
 
   @override
   State<Homepage> createState() => _HomepageState();
@@ -107,7 +109,7 @@ class _HomepageState extends State<Homepage> {
     showDialog(
       context: context,
       builder: (context) {
-        TextEditingController _newPriceController = TextEditingController();
+        TextEditingController newPriceController = TextEditingController();
 
         return Dialog(
           shape: RoundedRectangleBorder(
@@ -126,7 +128,7 @@ class _HomepageState extends State<Homepage> {
                   height: 12,
                 ),
                 TextField(
-                  controller: _newPriceController,
+                  controller: newPriceController,
                   keyboardType: TextInputType.numberWithOptions(decimal: true),
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
@@ -152,10 +154,10 @@ class _HomepageState extends State<Homepage> {
                       onPressed: () {
                         // Update petrol price from the dialog
                         price =
-                            double.tryParse(_newPriceController.text) ?? price;
+                            double.tryParse(newPriceController.text) ?? price;
 
                         // Clear the new petrol price text field
-                        _newPriceController.clear();
+                        newPriceController.clear();
 
                         // Update UI
                         setState(() {});
@@ -209,13 +211,9 @@ class _HomepageState extends State<Homepage> {
         child: Column(
           children: [
             const SizedBox(
-              height: 5,
+              height: 10,
             ),
-            Container(
-              height: 50,
-              width: 320,
-              color: Colors.red,
-            ),
+            MyBannerAdWidget(adSize: AdSize.banner),
             const SizedBox(height: 15),
             Column(
               children: [
@@ -261,157 +259,155 @@ class _HomepageState extends State<Homepage> {
             const SizedBox(
               height: 10,
             ),
-            Container(
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        const Text(
-                          'Price :',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(width: 10),
-                        GestureDetector(
-                          onTap: _updatePetrolPrice,
-                          child: Text(
-                            '₹${price.toStringAsFixed(2)}',
-                            style: const TextStyle(
-                              decoration: TextDecoration.underline,
-                              color: Colors.blue,
-                            ),
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      const Text(
+                        'Price :',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(width: 10),
+                      GestureDetector(
+                        onTap: _updatePetrolPrice,
+                        child: Text(
+                          '₹${price.toStringAsFixed(2)}',
+                          style: const TextStyle(
+                            decoration: TextDecoration.underline,
+                            color: Colors.blue,
                           ),
                         ),
-                      ],
-                    ),
-                    const Text(
-                      'Opening Meter:',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    TextField(
-                      controller: _opening,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [LengthLimitingTextInputFormatter(10)],
-                      decoration: InputDecoration(
-                        hintText: 'Enter Opening Meter',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
                       ),
-                      focusNode: _openingFocusNode,
-                      onEditingComplete: () {
-                        FocusScope.of(context).requestFocus(_closingFocusNode);
-                      },
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    const Text(
-                      'Closing Meter:',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    TextField(
-                      controller: _closing,
-                      keyboardType:
-                          TextInputType.numberWithOptions(decimal: true),
-                      inputFormatters: [LengthLimitingTextInputFormatter(10)],
-                      decoration: InputDecoration(
-                        hintText: 'Enter Closing Meter',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
+                    ],
+                  ),
+                  const Text(
+                    'Opening Meter:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  TextField(
+                    controller: _opening,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [LengthLimitingTextInputFormatter(10)],
+                    decoration: InputDecoration(
+                      hintText: 'Enter Opening Meter',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
                       ),
-                      focusNode: _closingFocusNode,
-                      onEditingComplete: () {
-                        FocusScope.of(context).requestFocus(_pinlabFocusNode);
-                      },
                     ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    const Text(
-                      'Pinelab Value:',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    TextField(
-                      controller: _pinlab,
-                      keyboardType:
-                          TextInputType.numberWithOptions(decimal: true),
-                      decoration: InputDecoration(
-                        hintText: 'Enter Pinelab Value',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
+                    focusNode: _openingFocusNode,
+                    onEditingComplete: () {
+                      FocusScope.of(context).requestFocus(_closingFocusNode);
+                    },
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  const Text(
+                    'Closing Meter:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  TextField(
+                    controller: _closing,
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
+                    inputFormatters: [LengthLimitingTextInputFormatter(10)],
+                    decoration: InputDecoration(
+                      hintText: 'Enter Closing Meter',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
                       ),
-                      focusNode: _pinlabFocusNode,
-                      onEditingComplete: () {
-                        FocusScope.of(context)
-                            .requestFocus(_onlinePaymentFocusNode);
-                      },
                     ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    const Text(
-                      'Online Payment :',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    TextField(
-                      controller: _onlinePayment,
-                      keyboardType:
-                          TextInputType.numberWithOptions(decimal: true),
-                      decoration: InputDecoration(
-                        hintText: 'Enter Online Payment',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
+                    focusNode: _closingFocusNode,
+                    onEditingComplete: () {
+                      FocusScope.of(context).requestFocus(_pinlabFocusNode);
+                    },
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  const Text(
+                    'Pinelab Value:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  TextField(
+                    controller: _pinlab,
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
+                    decoration: InputDecoration(
+                      hintText: 'Enter Pinelab Value',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
                       ),
-                      focusNode: _onlinePaymentFocusNode,
-                      onEditingComplete: () {
-                        FocusScope.of(context)
-                            .requestFocus(_depositCashFocusNode);
-                      },
                     ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    const Text(
-                      'Deposit Cash :',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    TextField(
-                      controller: _depositCash,
-                      keyboardType:
-                          TextInputType.numberWithOptions(decimal: true),
-                      decoration: InputDecoration(
-                        hintText: 'Enter Deposit Cash',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
+                    focusNode: _pinlabFocusNode,
+                    onEditingComplete: () {
+                      FocusScope.of(context)
+                          .requestFocus(_onlinePaymentFocusNode);
+                    },
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  const Text(
+                    'Online Payment :',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  TextField(
+                    controller: _onlinePayment,
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
+                    decoration: InputDecoration(
+                      hintText: 'Enter Online Payment',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
                       ),
-                      focusNode: _depositCashFocusNode,
-                      onEditingComplete: _calculatePetrolAndCash,
                     ),
-                  ],
-                ),
+                    focusNode: _onlinePaymentFocusNode,
+                    onEditingComplete: () {
+                      FocusScope.of(context)
+                          .requestFocus(_depositCashFocusNode);
+                    },
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  const Text(
+                    'Deposit Cash :',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  TextField(
+                    controller: _depositCash,
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
+                    decoration: InputDecoration(
+                      hintText: 'Enter Deposit Cash',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    focusNode: _depositCashFocusNode,
+                    onEditingComplete: _calculatePetrolAndCash,
+                  ),
+                ],
               ),
             ),
             Row(
