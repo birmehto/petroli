@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({Key? key}) : super(key: key);
@@ -17,6 +18,24 @@ class _HomepageState extends State<Homepage> {
   double petrolUsed = 0.0;
   double cashAvailable = 0.0;
   double price = 96.45; // Initial petrol price
+
+  // Create FocusNode instances for each TextField
+  final FocusNode _openingFocusNode = FocusNode();
+  final FocusNode _closingFocusNode = FocusNode();
+  final FocusNode _pinlabFocusNode = FocusNode();
+  final FocusNode _onlinePaymentFocusNode = FocusNode();
+  final FocusNode _depositCashFocusNode = FocusNode();
+
+  @override
+  void dispose() {
+    // Dispose of the FocusNode instances when the widget is disposed
+    _openingFocusNode.dispose();
+    _closingFocusNode.dispose();
+    _pinlabFocusNode.dispose();
+    _onlinePaymentFocusNode.dispose();
+    _depositCashFocusNode.dispose();
+    super.dispose();
+  }
 
   void _calculatePetrolAndCash() {
     // Parse values from text controllers
@@ -90,44 +109,67 @@ class _HomepageState extends State<Homepage> {
       builder: (context) {
         TextEditingController _newPriceController = TextEditingController();
 
-        return AlertDialog(
-          title: Center(
-            child: const Text(
-              'Update Petrol Price',
-              style: TextStyle(color: Colors.green),
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: Container(
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Update Petrol Price',
+                  style: TextStyle(
+                    color: Colors.green,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                TextField(
+                  controller: _newPriceController,
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(
+                    hintText: 'Enter new petrol price',
+                  ),
+                ),
+                SizedBox(height: 20.0), // Increase the height as needed
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(color: Colors.redAccent),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        // Update petrol price from the dialog
+                        price =
+                            double.tryParse(_newPriceController.text) ?? price;
+
+                        // Clear the new petrol price text field
+                        _newPriceController.clear();
+
+                        // Update UI
+                        setState(() {});
+
+                        // Close the dialog
+                        Navigator.pop(context);
+                      },
+                      child: const Text(
+                        'Update',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-          content: TextField(
-            controller: _newPriceController,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-              hintText: 'Enter new petrol price',
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                // Update petrol price from the dialog
-                price = double.tryParse(_newPriceController.text) ?? price;
-
-                // Clear the new petrol price text field
-                _newPriceController.clear();
-
-                // Update UI
-                setState(() {});
-
-                // Close the dialog
-                Navigator.pop(context);
-              },
-              child: const Text('Update'),
-            ),
-          ],
         );
       },
     );
@@ -136,7 +178,6 @@ class _HomepageState extends State<Homepage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         flexibleSpace: Center(
           child: SafeArea(
@@ -148,7 +189,7 @@ class _HomepageState extends State<Homepage> {
                   height: 30,
                 ),
                 const Text(
-                  'Petroli',
+                  'Petrolin',
                   style: TextStyle(
                     fontFamily: 'Oswald',
                     fontWeight: FontWeight.bold,
@@ -244,7 +285,7 @@ class _HomepageState extends State<Homepage> {
                       ],
                     ),
                     const Text(
-                      'Opening :',
+                      'Opening Meter:',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(
@@ -253,18 +294,23 @@ class _HomepageState extends State<Homepage> {
                     TextField(
                       controller: _opening,
                       keyboardType: TextInputType.number,
+                      inputFormatters: [LengthLimitingTextInputFormatter(10)],
                       decoration: InputDecoration(
                         hintText: 'Enter Opening Meter',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
                       ),
+                      focusNode: _openingFocusNode,
+                      onEditingComplete: () {
+                        FocusScope.of(context).requestFocus(_closingFocusNode);
+                      },
                     ),
                     const SizedBox(
                       height: 5,
                     ),
                     const Text(
-                      'Closing :',
+                      'Closing Meter:',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(
@@ -272,19 +318,25 @@ class _HomepageState extends State<Homepage> {
                     ),
                     TextField(
                       controller: _closing,
-                      keyboardType: TextInputType.number,
+                      keyboardType:
+                          TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: [LengthLimitingTextInputFormatter(10)],
                       decoration: InputDecoration(
                         hintText: 'Enter Closing Meter',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
                       ),
+                      focusNode: _closingFocusNode,
+                      onEditingComplete: () {
+                        FocusScope.of(context).requestFocus(_pinlabFocusNode);
+                      },
                     ),
                     const SizedBox(
                       height: 5,
                     ),
                     const Text(
-                      'Pinelab :',
+                      'Pinelab Value:',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(
@@ -292,13 +344,19 @@ class _HomepageState extends State<Homepage> {
                     ),
                     TextField(
                       controller: _pinlab,
-                      keyboardType: TextInputType.number,
+                      keyboardType:
+                          TextInputType.numberWithOptions(decimal: true),
                       decoration: InputDecoration(
                         hintText: 'Enter Pinelab Value',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
                       ),
+                      focusNode: _pinlabFocusNode,
+                      onEditingComplete: () {
+                        FocusScope.of(context)
+                            .requestFocus(_onlinePaymentFocusNode);
+                      },
                     ),
                     const SizedBox(
                       height: 5,
@@ -312,13 +370,19 @@ class _HomepageState extends State<Homepage> {
                     ),
                     TextField(
                       controller: _onlinePayment,
-                      keyboardType: TextInputType.number,
+                      keyboardType:
+                          TextInputType.numberWithOptions(decimal: true),
                       decoration: InputDecoration(
                         hintText: 'Enter Online Payment',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
                       ),
+                      focusNode: _onlinePaymentFocusNode,
+                      onEditingComplete: () {
+                        FocusScope.of(context)
+                            .requestFocus(_depositCashFocusNode);
+                      },
                     ),
                     const SizedBox(
                       height: 5,
@@ -332,13 +396,16 @@ class _HomepageState extends State<Homepage> {
                     ),
                     TextField(
                       controller: _depositCash,
-                      keyboardType: TextInputType.number,
+                      keyboardType:
+                          TextInputType.numberWithOptions(decimal: true),
                       decoration: InputDecoration(
                         hintText: 'Enter Deposit Cash',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
                       ),
+                      focusNode: _depositCashFocusNode,
+                      onEditingComplete: _calculatePetrolAndCash,
                     ),
                   ],
                 ),
@@ -387,6 +454,9 @@ class _HomepageState extends State<Homepage> {
                   "assets/img/india.png",
                   height: 20,
                 ),
+                SizedBox(
+                  height: 40,
+                )
               ],
             ),
           ],
