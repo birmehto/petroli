@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:patroli/Componets/MyTextform.dart';
 import 'package:patroli/ads_manger.dart';
 
 class Homepage extends StatefulWidget {
@@ -41,29 +40,11 @@ class _HomepageState extends State<Homepage> {
   }
 
   void _calculatePetrolAndCash() {
-    // Check if any text field (except "Deposit Cash") is empty
-    if (_opening.text.isEmpty ||
-        _closing.text.isEmpty ||
-        _pinlab.text.isEmpty ||
-        _onlinePayment.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Colors.redAccent,
-          content: Text(
-            'Please fill in all the required fields',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-        ),
-      );
-      return;
-    }
-
     // Parse values from text controllers
     double openingMeter = double.tryParse(_opening.text) ?? 0;
     double closingMeter = double.tryParse(_closing.text) ?? 0;
     double pinlabValue = double.tryParse(_pinlab.text) ?? 0;
     double onlinePaymentValue = double.tryParse(_onlinePayment.text) ?? 0;
-
     double depositCashValue = double.tryParse(_depositCash.text) ?? 0;
 
     // Check for suspicious data
@@ -227,28 +208,13 @@ class _HomepageState extends State<Homepage> {
           ),
         ),
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Text(
-                'Petrolin',
-              ),
-            )
-          ],
-        ),
-      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             const SizedBox(
               height: 10,
             ),
-            MyBannerAdWidget(adSize: AdSize.banner), // Uncomment if needed
+            MyBannerAdWidget(adSize: AdSize.banner),
             const SizedBox(height: 15),
             Column(
               children: [
@@ -319,86 +285,126 @@ class _HomepageState extends State<Homepage> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Opening Meter :',
-                            ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            CustomTextField(
-                              controller: _opening,
-                              hintText: 'Opening Meter',
-                              keyboardType: TextInputType.number,
-                              focusNode: _openingFocusNode,
-                              nextFocusNode: _closingFocusNode,
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Closing Meter :'),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            CustomTextField(
-                              controller: _closing,
-                              hintText: 'Closing Meter',
-                              keyboardType:
-                                  const TextInputType.numberWithOptions(
-                                      decimal: true),
-                              focusNode: _closingFocusNode,
-                              nextFocusNode: _pinlabFocusNode,
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
+                  const Text(
+                    'Opening Meter:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 10),
-                  Text('Total Card Value :'),
-                  const SizedBox(height: 5),
-                  CustomTextField(
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  TextField(
+                    controller: _opening,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [LengthLimitingTextInputFormatter(10)],
+                    decoration: InputDecoration(
+                      hintText: 'Enter Opening Meter',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    focusNode: _openingFocusNode,
+                    onEditingComplete: () {
+                      FocusScope.of(context).requestFocus(_closingFocusNode);
+                    },
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  const Text(
+                    'Closing Meter:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  TextField(
+                    controller: _closing,
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
+                    inputFormatters: [LengthLimitingTextInputFormatter(10)],
+                    decoration: InputDecoration(
+                      hintText: 'Enter Closing Meter',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    focusNode: _closingFocusNode,
+                    onEditingComplete: () {
+                      FocusScope.of(context).requestFocus(_pinlabFocusNode);
+                    },
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  const Text(
+                    'Pinelab Value:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  TextField(
                     controller: _pinlab,
-                    hintText: 'Card Value',
                     keyboardType:
                         const TextInputType.numberWithOptions(decimal: true),
+                    decoration: InputDecoration(
+                      hintText: 'Enter Pinelab Value',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
                     focusNode: _pinlabFocusNode,
-                    nextFocusNode: _onlinePaymentFocusNode,
+                    onEditingComplete: () {
+                      FocusScope.of(context)
+                          .requestFocus(_onlinePaymentFocusNode);
+                    },
                   ),
-                  const SizedBox(height: 10),
-                  Text('Online Payment :'),
-                  const SizedBox(height: 5),
-                  CustomTextField(
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  const Text(
+                    'Online Payment :',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  TextField(
                     controller: _onlinePayment,
-                    hintText: 'Online Payment',
                     keyboardType:
                         const TextInputType.numberWithOptions(decimal: true),
+                    decoration: InputDecoration(
+                      hintText: 'Enter Online Payment',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
                     focusNode: _onlinePaymentFocusNode,
-                    nextFocusNode: _depositCashFocusNode,
+                    onEditingComplete: () {
+                      FocusScope.of(context)
+                          .requestFocus(_depositCashFocusNode);
+                    },
                   ),
-                  const SizedBox(height: 10),
-                  Text('Deposit Cash :'),
-                  const SizedBox(height: 5),
-                  CustomTextField(
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  const Text(
+                    'Deposit Cash :',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  TextField(
                     controller: _depositCash,
-                    hintText: 'Deposit Cash',
                     keyboardType:
                         const TextInputType.numberWithOptions(decimal: true),
+                    decoration: InputDecoration(
+                      hintText: 'Enter Deposit Cash',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
                     focusNode: _depositCashFocusNode,
                     onEditingComplete: _calculatePetrolAndCash,
                   ),

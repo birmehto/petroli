@@ -5,7 +5,7 @@ import 'package:patroli/Componets/MyTextform.dart';
 import 'package:patroli/ads_manger.dart';
 
 class Homepage extends StatefulWidget {
-  const Homepage({super.key});
+  const Homepage({Key? key}) : super(key: key);
 
   @override
   State<Homepage> createState() => _HomepageState();
@@ -14,6 +14,8 @@ class Homepage extends StatefulWidget {
 class _HomepageState extends State<Homepage> {
   final TextEditingController _opening = TextEditingController();
   final TextEditingController _closing = TextEditingController();
+  final TextEditingController _opening2 = TextEditingController();
+  final TextEditingController _closing2 = TextEditingController();
   final TextEditingController _pinlab = TextEditingController();
   final TextEditingController _onlinePayment = TextEditingController();
   final TextEditingController _depositCash = TextEditingController();
@@ -25,6 +27,8 @@ class _HomepageState extends State<Homepage> {
   // Create FocusNode instances for each TextField
   final FocusNode _openingFocusNode = FocusNode();
   final FocusNode _closingFocusNode = FocusNode();
+  final FocusNode _opening2FocusNode = FocusNode();
+  final FocusNode _closing2FocusNode = FocusNode();
   final FocusNode _pinlabFocusNode = FocusNode();
   final FocusNode _onlinePaymentFocusNode = FocusNode();
   final FocusNode _depositCashFocusNode = FocusNode();
@@ -34,6 +38,8 @@ class _HomepageState extends State<Homepage> {
     // Dispose of the FocusNode instances when the widget is disposed
     _openingFocusNode.dispose();
     _closingFocusNode.dispose();
+    _opening2FocusNode.dispose();
+    _closing2FocusNode.dispose();
     _pinlabFocusNode.dispose();
     _onlinePaymentFocusNode.dispose();
     _depositCashFocusNode.dispose();
@@ -41,26 +47,11 @@ class _HomepageState extends State<Homepage> {
   }
 
   void _calculatePetrolAndCash() {
-    // Check if any text field (except "Deposit Cash") is empty
-    if (_opening.text.isEmpty ||
-        _closing.text.isEmpty ||
-        _pinlab.text.isEmpty ||
-        _onlinePayment.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Colors.redAccent,
-          content: Text(
-            'Please fill in all the required fields',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-        ),
-      );
-      return;
-    }
-
     // Parse values from text controllers
     double openingMeter = double.tryParse(_opening.text) ?? 0;
     double closingMeter = double.tryParse(_closing.text) ?? 0;
+    double opening2Meter = double.tryParse(_opening2.text) ?? 0;
+    double closing2Meter = double.tryParse(_closing2.text) ?? 0;
     double pinlabValue = double.tryParse(_pinlab.text) ?? 0;
     double onlinePaymentValue = double.tryParse(_onlinePayment.text) ?? 0;
 
@@ -69,6 +60,8 @@ class _HomepageState extends State<Homepage> {
     // Check for suspicious data
     if (openingMeter < 0 ||
         closingMeter < 0 ||
+        opening2Meter < 0 ||
+        closing2Meter < 0 ||
         pinlabValue < 0 ||
         onlinePaymentValue < 0 ||
         depositCashValue < 0) {
@@ -85,9 +78,9 @@ class _HomepageState extends State<Homepage> {
     }
 
     // Check if opening meter is less than closing meter
-    if (openingMeter < closingMeter) {
+    if (openingMeter < closingMeter || opening2Meter < closing2Meter) {
       // Calculate petrol used
-      petrolUsed = closingMeter - openingMeter;
+      petrolUsed = closingMeter - openingMeter + closing2Meter - opening2Meter;
 
       // Calculate cash available
       cashAvailable = (petrolUsed * price) -
@@ -227,28 +220,13 @@ class _HomepageState extends State<Homepage> {
           ),
         ),
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Text(
-                'Petrolin',
-              ),
-            )
-          ],
-        ),
-      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             const SizedBox(
               height: 10,
             ),
-            MyBannerAdWidget(adSize: AdSize.banner), // Uncomment if needed
+            // MyBannerAdWidget(adSize: AdSize.banner), // Uncomment if needed
             const SizedBox(height: 15),
             Column(
               children: [
@@ -328,7 +306,7 @@ class _HomepageState extends State<Homepage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Opening Meter :',
+                              '1. Petrol Meter :-',
                             ),
                             SizedBox(
                               height: 5,
@@ -351,7 +329,7 @@ class _HomepageState extends State<Homepage> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Closing Meter :'),
+                            Text(''),
                             SizedBox(
                               height: 5,
                             ),
@@ -366,7 +344,57 @@ class _HomepageState extends State<Homepage> {
                             ),
                           ],
                         ),
-                      )
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '2. Petrol Meter :-',
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            CustomTextField(
+                              controller: _opening2,
+                              hintText: 'Opening Meter',
+                              keyboardType: TextInputType.number,
+                              focusNode: _opening2FocusNode,
+                              nextFocusNode: _closing2FocusNode,
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(''),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            CustomTextField(
+                              controller: _closing2,
+                              hintText: 'Closing Meter',
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                      decimal: true),
+                              focusNode: _closing2FocusNode,
+                              nextFocusNode: _pinlabFocusNode,
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 10),
@@ -419,6 +447,8 @@ class _HomepageState extends State<Homepage> {
                   onPressed: () {
                     _opening.clear();
                     _closing.clear();
+                    _opening2.clear();
+                    _closing2.clear();
                     _pinlab.clear();
                     _onlinePayment.clear();
                     _depositCash.clear();
