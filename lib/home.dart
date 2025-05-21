@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:patroli/Componets/MyTextform.dart';
 import 'package:patroli/ads_manger.dart';
 
@@ -21,6 +22,12 @@ class _HomepageState extends State<Homepage> {
   double petrolUsed = 0.0;
   double cashAvailable = 0.0;
   double price = 96.45; // Initial petrol price
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPetrolPrice();
+  }
 
   // Create FocusNode instances for each TextField
   final FocusNode _openingFocusNode = FocusNode();
@@ -124,6 +131,15 @@ class _HomepageState extends State<Homepage> {
     }
   }
 
+  // Loads the saved petrol price from SharedPreferences when the app starts.
+  // Defaults to 96.45 if no price is found.
+  Future<void> _loadPetrolPrice() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      price = prefs.getDouble('petrol_price') ?? 96.45;
+    });
+  }
+
   void _updatePetrolPrice() {
     showDialog(
       context: context,
@@ -171,16 +187,22 @@ class _HomepageState extends State<Homepage> {
                       ),
                     ),
                     TextButton(
-                      onPressed: () {
+                      onPressed: () async {
                         // Update petrol price from the dialog
-                        price =
-                            double.tryParse(newPriceController.text) ?? price;
+                        double? newPrice =
+                            double.tryParse(newPriceController.text);
+                        if (newPrice != null) {
+                          setState(() {
+                            price = newPrice;
+                          });
+                          // Save the new price to SharedPreferences.
+                          final SharedPreferences prefs =
+                              await SharedPreferences.getInstance();
+                          await prefs.setDouble('petrol_price', price);
+                        }
 
                         // Clear the new petrol price text field
                         newPriceController.clear();
-
-                        // Update UI
-                        setState(() {});
 
                         // Close the dialog
                         Navigator.pop(context);
@@ -237,8 +259,26 @@ class _HomepageState extends State<Homepage> {
               ),
               child: Text(
                 'Petrolin',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
               ),
-            )
+            ),
+            ListTile(
+              leading: Icon(Icons.settings),
+              title: Text('Settings'),
+              onTap: () {
+                // Handle settings tap
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.info_outline),
+              title: Text('About'),
+              onTap: () {
+                // Handle about tap
+              },
+            ),
           ],
         ),
       ),
